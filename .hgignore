@@ -1,0 +1,7 @@
+glob:bin/
+glob:project/Debug/
+glob:project/wadlib/Debug/
+glob:project/wadloader.vcproj.bcsnote.bcsanches.user
+glob:project/wadlib/wadlib.vcproj.bcsnote.bcsanches.user
+glob:project/wadloader.ncb
+glob:project/wadloader.suo

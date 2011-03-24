@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual C++ Express 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mapviewer", "wadloader.vcproj", "{11131C9C-93C2-451D-B4E8-BD7555DDC23F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5151A068-0834-4DCC-800A-364879F4B1EA} = {5151A068-0834-4DCC-800A-364879F4B1EA}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wadlib", "wadlib\wadlib.vcproj", "{5151A068-0834-4DCC-800A-364879F4B1EA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{11131C9C-93C2-451D-B4E8-BD7555DDC23F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{11131C9C-93C2-451D-B4E8-BD7555DDC23F}.Debug|Win32.Build.0 = Debug|Win32
+		{11131C9C-93C2-451D-B4E8-BD7555DDC23F}.Release|Win32.ActiveCfg = Release|Win32
+		{11131C9C-93C2-451D-B4E8-BD7555DDC23F}.Release|Win32.Build.0 = Release|Win32
+		{5151A068-0834-4DCC-800A-364879F4B1EA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5151A068-0834-4DCC-800A-364879F4B1EA}.Debug|Win32.Build.0 = Debug|Win32
+		{5151A068-0834-4DCC-800A-364879F4B1EA}.Release|Win32.ActiveCfg = Release|Win32
+		{5151A068-0834-4DCC-800A-364879F4B1EA}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
