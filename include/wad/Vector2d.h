@@ -3,6 +3,8 @@
 
 #include <math.h>
 
+//Simple and straight forward vector for basic operations
+//Not the best in the world, not optimized, but can handle the needed :)
 struct Vector2d_s
 {
 	Vector2d_s(float x, float y):

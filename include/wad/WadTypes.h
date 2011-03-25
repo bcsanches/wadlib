@@ -6,6 +6,15 @@ typedef unsigned short uint16_t;
 typedef int int32_t;
 typedef unsigned int uint32_t;
 
+struct Thing_s
+{
+	int16_t iX;
+	int16_t iY;
+	int16_t iAngle;
+	int16_t iType;
+	int16_t iFlags;
+};
+
 struct LineDef_s
 {
 	int16_t iStartVertex;

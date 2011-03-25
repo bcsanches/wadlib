@@ -45,6 +45,7 @@ void WadLevel_c::LoadLump(std::vector<T> &dest, LevelLumps_e lump, WadFile_c &fi
 
 void WadLevel_c::Load(WadFile_c &file, const Directory_s *levelDir)
 {
+	LoadLump(vecThings, LL_THINGS, file, levelDir);
 	LoadLump(vecLineDefs, LL_LINEDEFS, file, levelDir);
 	LoadLump(vecVertices, LL_VERTICES, file, levelDir);	
 	LoadLump(vecSegments, LL_SEGS, file, levelDir);	
@@ -52,7 +53,7 @@ void WadLevel_c::Load(WadFile_c &file, const Directory_s *levelDir)
 	LoadLump(vecSubSectors, LL_SSECTORS, file, levelDir);	
 	LoadLump(vecGLVertices, LL_GL_VERT, file, levelDir, "gNd5");
 	LoadLump(vecGLSegments, LL_GL_SEGS, file, levelDir);
-	LoadLump(vecGLSubSectors, LL_GL_SSECTORS, file, levelDir);
+	LoadLump(vecGLSubSectors, LL_GL_SSECTORS, file, levelDir);	
 
 	stMin.iX = 32767;
 	stMax.iX = -32768;

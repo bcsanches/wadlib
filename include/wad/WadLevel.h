@@ -35,6 +35,9 @@ class WadLevel_c
 
 		inline Vector2d_s GetGLVertex(int glIndex) const;
 
+		inline const Thing_s *GetThings() const;
+		inline const size_t GetNumThings() const;
+
 	private:
 		template<typename T>
 		void LoadLump(std::vector<T> &dest, LevelLumps_e lump, WadFile_c &file, const Directory_s *levelDir, const char *szMagic = NULL);		
@@ -48,6 +51,8 @@ class WadLevel_c
 		std::vector<GLVertex_s> vecGLVertices;
 		std::vector<GLSegment5_s> vecGLSegments;
 		std::vector<GLSubSector3_s> vecGLSubSectors;	
+
+		std::vector<Thing_s> vecThings;
 
 		Vertex_s stMin;
 		Vertex_s stMax;		
@@ -110,6 +115,16 @@ inline const size_t WadLevel_c::GetNumGLSubSectors() const
 inline const GLSegment5_s *WadLevel_c::GetGLSegments() const
 {
 	return &vecGLSegments[0];
+}
+
+inline const Thing_s *WadLevel_c::GetThings() const
+{
+	return &vecThings[0];
+}
+
+inline const size_t WadLevel_c::GetNumThings() const
+{
+	return vecThings.size();
 }
 
 #define FIX_VERTEX_INDEX(X) (X & ~((1 << 31) | (1 << 30)))

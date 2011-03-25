@@ -13,7 +13,8 @@ enum DrawFlags_e
 	DF_SHOW_SEGMENTS = 0x02,
 	DF_SHOW_VERTICES = 0x04,
 	DF_SHOW_PARTITION_LINES = 0x08,
-	DF_SHOW_SUBSECTORS = 0x10
+	DF_SHOW_SUBSECTORS = 0x10,
+	DF_SHOW_THINGS = 0x20
 };
 
 
@@ -142,6 +143,18 @@ void DrawLevel(const WadLevel_c &level, SDL_Surface *screen, uint32_t flags)
 			}
 		}
 	}
+
+	if(flags & DF_SHOW_THINGS)
+	{
+		const Thing_s *things = level.GetThings();
+		for(size_t i = 0, len = level.GetNumThings(); i < len; ++i)
+		{
+			float x1 = (things[i].iX * scaleX) + offsetX;
+			float y1 = (things[i].iY * scaleY) + offsetY;
+
+			circleColor(screen, (int16_t)x1, (int16_t)y1, 2, yellow);
+		}
+	}
 }
 
 void LoadLevel(WadFile_c &file, WadLevel_c &level, const char *name)
@@ -235,6 +248,10 @@ int main(int argc, char **argv)
 						if(ev.key.keysym.sym == SDLK_u)
 						{
 							flags ^= DF_SHOW_SUBSECTORS;
+						}
+						if(ev.key.keysym.sym == SDLK_t)
+						{
+							flags ^= DF_SHOW_THINGS;
 						}
 						if(ev.key.keysym.sym == SDLK_PAGEDOWN)
 						{

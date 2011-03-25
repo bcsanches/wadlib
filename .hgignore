@@ -5,3 +5,4 @@ glob:project/wadloader.vcproj.bcsnote.bcsanches.user
 glob:project/wadlib/wadlib.vcproj.bcsnote.bcsanches.user
 glob:project/wadloader.ncb
 glob:project/wadloader.suo
+glob:lib/
