@@ -102,6 +102,19 @@ struct GLSubSector3_s
    uint32_t iFirstSeg;
 };
 
+struct Sector_s
+{
+	int16_t iFloorHeight;
+	int16_t iCeilHeight;
+
+	char	archFloorTexture[8];
+	char	archCeilTexture[8];
+
+	int16_t iLightLevel;
+	uint16_t uType;
+	uint16_t uTag;
+};
+
 enum LevelLumps_e
 {
   LL_NAME,

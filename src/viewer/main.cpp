@@ -1,8 +1,11 @@
 #include <SDL.h>
 #include <SDL_gfxPrimitives.h>
 
+#include <assert.h>
 #include <iostream>
+#include <set>
 
+#include "ITexture.h"
 #include "WadFile.h"
 #include "WadLevel.h"
 #include "Vector2d.h"
@@ -17,9 +20,141 @@ enum DrawFlags_e
 	DF_SHOW_THINGS = 0x20
 };
 
+class SDLTexture_c: public ITexture_c
+{
+	public:
+		SDLTexture_c();
+		virtual ~SDLTexture_c();
 
+		virtual void SetSize(uint16_t w, uint16_t h);
+		virtual void *GetPixels();
+		virtual void SetPalette(const void *);
 
-void DrawLevel(const WadLevel_c &level, SDL_Surface *screen, uint32_t flags)
+		void Save(const char *szFileName);
+
+	private:
+		SDL_Surface *pstSurface;
+};
+
+SDLTexture_c::SDLTexture_c():
+	pstSurface(NULL)
+{	
+	//empty
+}
+
+SDLTexture_c::~SDLTexture_c()
+{
+	SDL_FreeSurface(pstSurface);
+}
+
+void SDLTexture_c::SetSize(uint16_t w, uint16_t h)
+{
+	if(pstSurface)
+	{
+		if((pstSurface->w == w) && (pstSurface->h == h))
+			return;
+
+		SDL_FreeSurface(pstSurface);
+		pstSurface = NULL;
+	}
+
+	pstSurface = SDL_CreateRGBSurface(0, w, h, 8, 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF);
+}
+
+void *SDLTexture_c::GetPixels()
+{
+	assert(pstSurface != NULL);
+
+	return pstSurface->pixels;
+}
+
+void SDLTexture_c::SetPalette(const void *data)
+{
+	assert(pstSurface != NULL);
+	
+	const uint8_t *rgb = reinterpret_cast<const uint8_t*>(data);
+	SDL_Color *palette = pstSurface->format->palette->colors;
+	for(int i = 0;i < 256;++i)
+	{
+		palette[i].r = rgb[0];
+		palette[i].g = rgb[1];
+		palette[i].b = rgb[2];
+		palette[i].unused = 0;
+
+		rgb += 3;
+	}	
+}
+
+void SDLTexture_c::Save(const char *szFileName)
+{
+	SDL_SaveBMP(pstSurface, szFileName);
+}
+
+struct FlatNameFunctor_s
+{
+	bool operator()(const char *pchLhs, const char *pchRhs)const
+	{
+		return strncmp(pchLhs, pchRhs, 8) < 0;
+	}
+};
+
+typedef std::set<const char *, FlatNameFunctor_s> FlatNameSet_t;
+
+static void ExportFlat(SDLTexture_c &texture,  WadFile_c &file, FlatNameSet_t &setExportedFlats,  const char *pchName)
+{
+	FlatNameSet_t::iterator it = setExportedFlats.lower_bound(pchName);
+	if((it != setExportedFlats.end()) && (!setExportedFlats.key_comp()(pchName, *it)))
+	{
+		//already exists, ignore
+	}
+	else
+	{
+		file.LoadFlat(texture, pchName);
+
+		setExportedFlats.insert(it, pchName);		
+
+		char szFileName[13] = {0};
+		memcpy(szFileName, pchName, 8);
+		strcat(szFileName, ".bmp");
+
+		std::cout << szFileName << std::endl;
+		texture.Save(szFileName);
+	}
+}
+
+static void ExportFlats(const WadLevel_c &level, WadFile_c &file)
+{
+	FlatNameSet_t setExportedFlats;
+
+	SDLTexture_c texture;
+
+	std::cout << "Exporting current level flats:" << std::endl;
+	const Sector_s *sectors = level.GetSectors();
+	for(size_t i = 0;i < level.GetNumSectors(); ++i)
+	{
+		const Sector_s &sector = sectors[i];
+
+		ExportFlat(texture, file, setExportedFlats, sector.archFloorTexture);
+		ExportFlat(texture, file, setExportedFlats, sector.archCeilTexture);				
+	}
+	std::cout << "Done." << std::endl;
+}
+
+static void ExportAllFlats(WadFile_c &file)
+{
+	FlatNameSet_t setExportedFlats;
+
+	SDLTexture_c texture;
+
+	std::cout << "Exporting WAD flats:" << std::endl;
+	for(const Directory_s *flat = file.FlatBegin(), *end = file.FlatEnd(); flat != end; ++flat)
+	{
+		ExportFlat(texture, file, setExportedFlats, flat->archName);
+	}
+	std::cout << "Done." << std::endl;
+}
+
+static void DrawLevel(const WadLevel_c &level, SDL_Surface *screen, uint32_t flags)
 {
 	float scaleX, scaleY;
 	float offsetX, offsetY;
@@ -229,6 +364,15 @@ int main(int argc, char **argv)
 					case SDL_KEYDOWN:
 						if(ev.key.keysym.sym == SDLK_ESCAPE)
 							quit = true;
+
+						if((ev.key.keysym.sym == SDLK_e) && (ev.key.keysym.mod & KMOD_SHIFT))
+						{
+							ExportAllFlats(wad);
+						}
+						if((ev.key.keysym.sym == SDLK_e) && (!ev.key.keysym.mod))
+						{
+							ExportFlats(level, wad);
+						}
 						if(ev.key.keysym.sym == SDLK_n)
 						{
 							flags ^= DF_SHOW_LINE_SIDES;							
@@ -237,22 +381,24 @@ int main(int argc, char **argv)
 						{
 							flags ^= DF_SHOW_SEGMENTS;
 						}
-						if(ev.key.keysym.sym == SDLK_v)
-						{
-							flags ^= DF_SHOW_VERTICES;
-						}
 						if(ev.key.keysym.sym == SDLK_p)
 						{
 							flags ^= DF_SHOW_PARTITION_LINES;
-						}
-						if(ev.key.keysym.sym == SDLK_u)
-						{
-							flags ^= DF_SHOW_SUBSECTORS;
 						}
 						if(ev.key.keysym.sym == SDLK_t)
 						{
 							flags ^= DF_SHOW_THINGS;
 						}
+						if(ev.key.keysym.sym == SDLK_u)
+						{
+							flags ^= DF_SHOW_SUBSECTORS;
+						}
+						if(ev.key.keysym.sym == SDLK_v)
+						{
+							flags ^= DF_SHOW_VERTICES;
+						}						
+						
+						
 						if(ev.key.keysym.sym == SDLK_PAGEDOWN)
 						{
 							currentLevel = (currentLevel + 1) % levelsNames.size();							

@@ -49,8 +49,9 @@ void WadLevel_c::Load(WadFile_c &file, const Directory_s *levelDir)
 	LoadLump(vecLineDefs, LL_LINEDEFS, file, levelDir);
 	LoadLump(vecVertices, LL_VERTICES, file, levelDir);	
 	LoadLump(vecSegments, LL_SEGS, file, levelDir);	
+	LoadLump(vecSubSectors, LL_SSECTORS, file, levelDir);
 	LoadLump(vecNodes, LL_NODES, file, levelDir);	
-	LoadLump(vecSubSectors, LL_SSECTORS, file, levelDir);	
+	LoadLump(vecSectors, LL_SECTORS, file, levelDir);	
 	LoadLump(vecGLVertices, LL_GL_VERT, file, levelDir, "gNd5");
 	LoadLump(vecGLSegments, LL_GL_SEGS, file, levelDir);
 	LoadLump(vecGLSubSectors, LL_GL_SSECTORS, file, levelDir);	

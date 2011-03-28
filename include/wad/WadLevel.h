@@ -1,4 +1,4 @@
-#ifndef WADLEVEL_H
+	#ifndef WADLEVEL_H
 #define WADLEVEL_H
 
 #include <vector>
@@ -38,6 +38,9 @@ class WadLevel_c
 		inline const Thing_s *GetThings() const;
 		inline const size_t GetNumThings() const;
 
+		inline const Sector_s *GetSectors() const;
+		inline const size_t GetNumSectors() const;
+
 	private:
 		template<typename T>
 		void LoadLump(std::vector<T> &dest, LevelLumps_e lump, WadFile_c &file, const Directory_s *levelDir, const char *szMagic = NULL);		
@@ -47,6 +50,7 @@ class WadLevel_c
 		std::vector<Vertex_s> vecVertices;
 		std::vector<Segment_s> vecSegments;
 		std::vector<Node_s> vecNodes;
+		std::vector<Sector_s> vecSectors;
 		std::vector<SubSector_s> vecSubSectors;
 		std::vector<GLVertex_s> vecGLVertices;
 		std::vector<GLSegment5_s> vecGLSegments;
@@ -125,6 +129,16 @@ inline const Thing_s *WadLevel_c::GetThings() const
 inline const size_t WadLevel_c::GetNumThings() const
 {
 	return vecThings.size();
+}
+
+inline const Sector_s *WadLevel_c::GetSectors() const
+{
+	return &vecSectors[0];
+}
+
+inline const size_t WadLevel_c::GetNumSectors() const
+{
+	return vecSectors.size();
 }
 
 #define FIX_VERTEX_INDEX(X) (X & ~((1 << 31) | (1 << 30)))

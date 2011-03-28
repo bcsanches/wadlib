@@ -2,6 +2,7 @@
 
 #include <sstream>
 
+#include "ITexture.h"
 #include "WadLevel.h"
 
 WadFile_c::WadFile_c(const char *fileName):
@@ -26,7 +27,28 @@ WadFile_c::WadFile_c(const char *fileName):
 	clFile.seekg(stLumpInfo.iOffset);
 	vecDirectories.resize(stLumpInfo.iNum);
 	clFile.read(reinterpret_cast<char *>(&vecDirectories[0]), sizeof(Directory_s) * stLumpInfo.iNum);
+
+	pstFStart = this->FindLump("F_START");
+	pstFEnd = this->FindLump("F_END");
+
+	this->ReadRawLump(vecColorMap, "COLORMAP");
+	this->ReadRawLump(vecPalette, "PLAYPAL");	
 }
+
+void WadFile_c::ReadRawLump(std::vector<uint8_t> &dest, const char *szName)
+{
+	Directory_s *directory = this->FindLump(szName);
+	if(directory == NULL)
+	{
+		std::stringstream stream;
+		stream << szName << " lump not found";
+		throw std::exception(stream.str().c_str());
+	}
+
+	dest.resize(directory->iSize);
+	this->ReadLump(reinterpret_cast<char *>(&dest[0]), *directory, NULL);
+}
+
 
 Directory_s *WadFile_c::FindLump(const char *name, size_t startIndex)
 {
@@ -36,6 +58,17 @@ Directory_s *WadFile_c::FindLump(const char *name, size_t startIndex)
 		{
 			return &vecDirectories[i];			
 		}
+	}
+
+	return NULL;
+}
+
+const Directory_s *WadFile_c::FindLump(const char *name, const Directory_s *begin, const Directory_s *end) const
+{
+	for(;begin != end; ++begin)
+	{
+		if(strncmp(begin->archName, name, 8) == 0)
+			return begin;
 	}
 
 	return NULL;
@@ -74,4 +107,39 @@ void WadFile_c::ReadLump(char *dest, const Directory_s &dir, const char *szMagic
 	}
 
 	clFile.read(dest, dir.iSize  - magicSize);
+}
+
+void WadFile_c::LoadFlat(ITexture_c &texture, const char *pchName)
+{
+	const Directory_s *flatDirectory = this->FindLump(pchName, pstFStart+1, pstFEnd);
+	if(flatDirectory == NULL)
+	{		
+		std::stringstream stream;
+		stream << "Flat " << std::string(pchName, 8) << " not found.";
+		
+		throw std::exception(stream.str().c_str());
+	}
+
+	texture.SetSize(64, 64);
+
+	uint8_t *pixels = reinterpret_cast<uint8_t*>(texture.GetPixels());
+
+	this->ReadLump(reinterpret_cast<char *>(texture.GetPixels()), *flatDirectory, NULL);
+
+	for(size_t sz = 0;sz < 64*64; ++sz)
+	{
+		pixels[sz] = vecColorMap[pixels[sz] + (256 * 0)];
+	}
+
+	texture.SetPalette(&vecPalette[768*0]);
+}
+
+const Directory_s *WadFile_c::FlatBegin()
+{
+	return pstFStart + 1;
+}
+
+const Directory_s *WadFile_c::FlatEnd()
+{
+	return pstFEnd;
 }

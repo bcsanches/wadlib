@@ -30,6 +30,7 @@ struct Directory_s
 	char	archName[8];
 };
 
+class ITexture_c;
 class WadLevel_c;
 
 /*
@@ -44,9 +45,17 @@ class WadFile_c
 
 		void LoadLevel(WadLevel_c &level, const char *name);
 		void ReadLump(char *dest, const Directory_s &dir, const char *szMagic); 
+		
+		void LoadFlat(ITexture_c &texture, const char *pchName);
+
+		const Directory_s *FlatBegin();
+		const Directory_s *FlatEnd();
 
 	private:
 		Directory_s *FindLump(const char *name, size_t startIndex = 0);
+		const Directory_s *FindLump(const char *name, const Directory_s *begin, const Directory_s *end) const;
+
+		void ReadRawLump(std::vector<uint8_t> &dest, const char *szName);
 
 	private:
 		std::ifstream clFile;
@@ -56,6 +65,11 @@ class WadFile_c
 		LumpInfo_s stLumpInfo;
 
 		std::vector<Directory_s> vecDirectories;
+		std::vector<uint8_t> vecColorMap;
+		std::vector<uint8_t> vecPalette;
+
+		const Directory_s *pstFStart;
+		const Directory_s *pstFEnd;
 };
 
 #endif
