@@ -43,7 +43,7 @@ void WadLevel_c::LoadLump(std::vector<T> &dest, LevelLumps_e lump, WadFile_c &fi
 	file.ReadLump(reinterpret_cast<char *>(&dest[0]), levelDir[lump], szMagic);
 }
 
-void WadLevel_c::Load(WadFile_c &file, const Directory_s *levelDir)
+void WadLevel_c::Load(WadFile_c &file, const Directory_s *levelDir, size_t numDirectories)
 {
 	LoadLump(vecThings, LL_THINGS, file, levelDir);
 	LoadLump(vecLineDefs, LL_LINEDEFS, file, levelDir);
@@ -51,10 +51,15 @@ void WadLevel_c::Load(WadFile_c &file, const Directory_s *levelDir)
 	LoadLump(vecSegments, LL_SEGS, file, levelDir);	
 	LoadLump(vecSubSectors, LL_SSECTORS, file, levelDir);
 	LoadLump(vecNodes, LL_NODES, file, levelDir);	
-	LoadLump(vecSectors, LL_SECTORS, file, levelDir);	
-	LoadLump(vecGLVertices, LL_GL_VERT, file, levelDir, "gNd5");
-	LoadLump(vecGLSegments, LL_GL_SEGS, file, levelDir);
-	LoadLump(vecGLSubSectors, LL_GL_SSECTORS, file, levelDir);	
+	LoadLump(vecSectors, LL_SECTORS, file, levelDir);
+
+	//Do we have GL data?
+	if((LL_GL_NAME < numDirectories) && (strncmp(levelDir[LL_GL_NAME].archName, pszLumpsNames_gl[LL_GL_NAME], 8) == 0))
+	{
+		LoadLump(vecGLVertices, LL_GL_VERT, file, levelDir, "gNd5");
+		LoadLump(vecGLSegments, LL_GL_SEGS, file, levelDir);
+		LoadLump(vecGLSubSectors, LL_GL_SSECTORS, file, levelDir);	
+	}
 
 	stMin.iX = 32767;
 	stMax.iX = -32768;

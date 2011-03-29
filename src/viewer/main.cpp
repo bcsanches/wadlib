@@ -20,6 +20,9 @@ enum DrawFlags_e
 	DF_SHOW_THINGS = 0x20
 };
 
+//"C:\games\DOOM Ultimate\Doom.wad" E1M1 E1M2 E1M3 E1M4 E1M5 E1M6 E1M7 E1M8 E1M9 E2M1 E2M2 E2M3 E2M4 E2M5 E2M6 E2M7 E2M8 E2M9 E3M1 E3M2 E3M3 E3M4 E3M5 E3M6 E3M7 E3M8 E3M9 E4M1 E4M2 E4M3 E4M4 E4M5 E4M6 E4M7 E4M8 E4M9
+//"C:\games\DOOM 2\doom2.wad" MAP01 MAP02 MAP03 MAP04 MAP05 MAP06 MAP07 MAP08 MAP09 MAP10 MAP11 MAP12 MAP13 MAP14 MAP15 MAP16 MAP17 MAP18 MAP19 MAP20 MAP21 MAP22 MAP23 MAP24 MAP25 MAP26 MAP27 MAP28 MAP29 MAP30 MAP31 MAP32
+
 class SDLTexture_c: public ITexture_c
 {
 	public:
@@ -31,7 +34,6 @@ class SDLTexture_c: public ITexture_c
 		virtual void SetPalette(const void *);
 
 		void Save(const char *szFileName);
-
 	private:
 		SDL_Surface *pstSurface;
 };
@@ -369,7 +371,7 @@ int main(int argc, char **argv)
 						{
 							ExportAllFlats(wad);
 						}
-						if((ev.key.keysym.sym == SDLK_e) && (!ev.key.keysym.mod))
+						if((ev.key.keysym.sym == SDLK_e) && !(ev.key.keysym.mod & KMOD_SHIFT))
 						{
 							ExportFlats(level, wad);
 						}

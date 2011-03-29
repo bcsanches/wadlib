@@ -37,30 +37,24 @@ WadFile_c::WadFile_c(const char *fileName):
 
 void WadFile_c::ReadRawLump(std::vector<uint8_t> &dest, const char *szName)
 {
-	Directory_s *directory = this->FindLump(szName);
-	if(directory == NULL)
-	{
-		std::stringstream stream;
-		stream << szName << " lump not found";
-		throw std::exception(stream.str().c_str());
-	}
+	const Directory_s *directory = this->FindLump(szName);	
 
 	dest.resize(directory->iSize);
 	this->ReadLump(reinterpret_cast<char *>(&dest[0]), *directory, NULL);
 }
 
-
-Directory_s *WadFile_c::FindLump(const char *name, size_t startIndex)
+const Directory_s *WadFile_c::FindLump(const char *name) const
 {
-	for(size_t i = startIndex;i < vecDirectories.size(); ++i)
+	for(size_t i = 0, len = vecDirectories.size();i < len; ++i)
 	{
 		if(strncmp(vecDirectories[i].archName, name, 8) == 0)
-		{
-			return &vecDirectories[i];			
-		}
+			return &vecDirectories[i];
 	}
-
-	return NULL;
+	
+	std::stringstream stream;
+	stream << "Lump " << std::string(name, 8) << " not found.";
+		
+	throw std::exception(stream.str().c_str());	
 }
 
 const Directory_s *WadFile_c::FindLump(const char *name, const Directory_s *begin, const Directory_s *end) const
@@ -71,20 +65,17 @@ const Directory_s *WadFile_c::FindLump(const char *name, const Directory_s *begi
 			return begin;
 	}
 
-	return NULL;
+	std::stringstream stream;
+	stream << "Lump " << std::string(name, 8) << " not found.";
+		
+	throw std::exception(stream.str().c_str());	
 }
 
 void WadFile_c::LoadLevel(WadLevel_c &level, const char *name)
 {	
-	Directory_s *levelLump = this->FindLump(name);
-	if(levelLump == NULL)
-	{
-		std::stringstream stream;
-		stream << "Level " << name << " not found";
-		throw std::exception(stream.str().c_str());
-	}	
+	const Directory_s *dir = this->FindLump(name);		
 	
-	level.Load(*this, levelLump);		
+	level.Load(*this, dir, (&vecDirectories.back() - dir)+1);
 }
 
 void WadFile_c::ReadLump(char *dest, const Directory_s &dir, const char *szMagic)
@@ -111,14 +102,7 @@ void WadFile_c::ReadLump(char *dest, const Directory_s &dir, const char *szMagic
 
 void WadFile_c::LoadFlat(ITexture_c &texture, const char *pchName)
 {
-	const Directory_s *flatDirectory = this->FindLump(pchName, pstFStart+1, pstFEnd);
-	if(flatDirectory == NULL)
-	{		
-		std::stringstream stream;
-		stream << "Flat " << std::string(pchName, 8) << " not found.";
-		
-		throw std::exception(stream.str().c_str());
-	}
+	const Directory_s *flatDirectory = this->FindLump(pchName, pstFStart+1, pstFEnd);	
 
 	texture.SetSize(64, 64);
 

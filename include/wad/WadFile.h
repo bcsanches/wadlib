@@ -51,9 +51,9 @@ class WadFile_c
 		const Directory_s *FlatBegin();
 		const Directory_s *FlatEnd();
 
-	private:
-		Directory_s *FindLump(const char *name, size_t startIndex = 0);
+	private:		
 		const Directory_s *FindLump(const char *name, const Directory_s *begin, const Directory_s *end) const;
+		const Directory_s *FindLump(const char *name) const;
 
 		void ReadRawLump(std::vector<uint8_t> &dest, const char *szName);
 

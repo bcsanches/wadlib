@@ -6,3 +6,5 @@ glob:project/wadlib/wadlib.vcproj.bcsnote.bcsanches.user
 glob:project/wadloader.ncb
 glob:project/wadloader.suo
 glob:lib/
+glob:project/wadlib/wadlib.vcproj.mordor.bcsanches.user
+glob:project/wadloader.vcproj.mordor.bcsanches.user

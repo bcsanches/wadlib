@@ -12,7 +12,7 @@ struct Directory_s;
 class WadLevel_c
 {
 	public:
-		void Load(WadFile_c &file, const Directory_s *levelDir);
+		void Load(WadFile_c &file, const Directory_s *levelDir, size_t numDirectories);
 
 		inline const Vertex_s &GetMin() const;
 		inline const Vertex_s &GetMax() const;
