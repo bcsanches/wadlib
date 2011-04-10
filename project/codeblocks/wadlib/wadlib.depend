@@ -1,0 +1,35 @@
+# depslib dependency file v1.0
+1302396507 source:/home/cronosts/Programming/Projects/wadlib/src/wad/WadFile.cpp
+	"WadFile.h"
+	<sstream>
+	<cstring>
+	<stdexcept>
+	"ITexture.h"
+	"WadLevel.h"
+
+1302396305 /home/cronosts/Programming/Projects/wadlib/include/wad/WadFile.h
+	<fstream>
+	"WadTypes.h"
+	<vector>
+
+1302410431 /home/cronosts/Programming/Projects/wadlib/include/wad/WadTypes.h
+
+1302394883 /home/cronosts/Programming/Projects/wadlib/include/wad/ITexture.h
+	"WadTypes.h"
+
+1302394883 /home/cronosts/Programming/Projects/wadlib/include/wad/WadLevel.h
+	<vector>
+	"Vector2d.h"
+	"WadTypes.h"
+
+1302394883 /home/cronosts/Programming/Projects/wadlib/include/wad/Vector2d.h
+	<math.h>
+
+1302396540 source:/home/cronosts/Programming/Projects/wadlib/src/wad/WadLevel.cpp
+	"WadLevel.h"
+	"WadFile.h"
+	"Vector2d.h"
+	<sstream>
+	<cstring>
+	<stdexcept>
+

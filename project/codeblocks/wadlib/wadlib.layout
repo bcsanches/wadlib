@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_layout_file>
+	<ActiveTarget name="Release" />
+	<File name="../../../include/wad/ITexture.h" open="0" top="0" tabpos="0">
+		<Cursor position="181" topLine="0" />
+	</File>
+	<File name="../../../include/wad/WadFile.h" open="1" top="0" tabpos="1">
+		<Cursor position="1008" topLine="6" />
+	</File>
+	<File name="../../../include/wad/WadTypes.h" open="1" top="1" tabpos="2">
+		<Cursor position="46" topLine="24" />
+	</File>
+	<File name="../../../src/wad/WadFile.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="2554" topLine="15" />
+	</File>
+	<File name="../../../src/wad/WadLevel.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="216" topLine="0" />
+	</File>
+</CodeBlocks_layout_file>

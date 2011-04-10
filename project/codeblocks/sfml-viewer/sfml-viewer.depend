@@ -1,0 +1,30 @@
+# depslib dependency file v1.0
+1302406363 source:/home/cronosts/Programming/Projects/wadlib/src/viewer/sfml/main.cpp
+	<SFML/Graphics.hpp>
+	<assert.h>
+	<iostream>
+	<set>
+	<cstring>
+	"ITexture.h"
+	"WadFile.h"
+	"WadLevel.h"
+	"Vector2d.h"
+
+1302394883 /home/cronosts/Programming/Projects/wadlib/include/wad/ITexture.h
+	"WadTypes.h"
+
+1302404016 /home/cronosts/Programming/Projects/wadlib/include/wad/WadTypes.h
+
+1302396305 /home/cronosts/Programming/Projects/wadlib/include/wad/WadFile.h
+	<fstream>
+	"WadTypes.h"
+	<vector>
+
+1302394883 /home/cronosts/Programming/Projects/wadlib/include/wad/WadLevel.h
+	<vector>
+	"Vector2d.h"
+	"WadTypes.h"
+
+1302394883 /home/cronosts/Programming/Projects/wadlib/include/wad/Vector2d.h
+	<math.h>
+
