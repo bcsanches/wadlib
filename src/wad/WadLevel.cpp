@@ -31,7 +31,7 @@ static const char *pszLumpsNames_gl[] =
 template<typename T>
 void WadLevel_c::LoadLump(std::vector<T> &dest, LevelLumps_e lump, WadFile_c &file, const Directory_s *levelDir, const char *szMagic)
 {
-	if(strncmp(levelDir[lump].archName, pszLumpsNames_gl[lump], 8))
+	if(strncmp(levelDir[lump].unName.archName, pszLumpsNames_gl[lump], 8))
 	{
 		std::stringstream stream;
 		stream << pszLumpsNames_gl[lump] << " not found";
@@ -47,6 +47,7 @@ void WadLevel_c::Load(WadFile_c &file, const Directory_s *levelDir, size_t numDi
 {
 	LoadLump(vecThings, LL_THINGS, file, levelDir);
 	LoadLump(vecLineDefs, LL_LINEDEFS, file, levelDir);
+	LoadLump(vecSideDefs, LL_SIDEDEFS, file, levelDir);
 	LoadLump(vecVertices, LL_VERTICES, file, levelDir);	
 	LoadLump(vecSegments, LL_SEGS, file, levelDir);	
 	LoadLump(vecSubSectors, LL_SSECTORS, file, levelDir);
@@ -54,7 +55,7 @@ void WadLevel_c::Load(WadFile_c &file, const Directory_s *levelDir, size_t numDi
 	LoadLump(vecSectors, LL_SECTORS, file, levelDir);
 
 	//Do we have GL data?
-	if((LL_GL_NAME < numDirectories) && (strncmp(levelDir[LL_GL_NAME].archName, pszLumpsNames_gl[LL_GL_NAME], 8) == 0))
+	if((LL_GL_NAME < numDirectories) && (strncmp(levelDir[LL_GL_NAME].unName.archName, pszLumpsNames_gl[LL_GL_NAME], 8) == 0))
 	{
 		LoadLump(vecGLVertices, LL_GL_VERT, file, levelDir, "gNd5");
 		LoadLump(vecGLSegments, LL_GL_SEGS, file, levelDir);

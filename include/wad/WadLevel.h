@@ -20,6 +20,9 @@ class WadLevel_c
 		inline const LineDef_s *GetLineDefs() const;
 		inline const size_t GetNumLineDefs() const;
 
+		inline const SideDef_s *GetSideDefs() const;
+		inline const size_t GetNumSideDefs() const;
+
 		inline const Vertex_s *GetVertices() const;
 
 		inline const Segment_s *GetSegments() const;
@@ -47,6 +50,7 @@ class WadLevel_c
 
 	private:
 		std::vector<LineDef_s> vecLineDefs;
+		std::vector<SideDef_s> vecSideDefs;
 		std::vector<Vertex_s> vecVertices;
 		std::vector<Segment_s> vecSegments;
 		std::vector<Node_s> vecNodes;
@@ -54,7 +58,7 @@ class WadLevel_c
 		std::vector<SubSector_s> vecSubSectors;
 		std::vector<GLVertex_s> vecGLVertices;
 		std::vector<GLSegment5_s> vecGLSegments;
-		std::vector<GLSubSector3_s> vecGLSubSectors;	
+		std::vector<GLSubSector3_s> vecGLSubSectors;			
 
 		std::vector<Thing_s> vecThings;
 
@@ -79,6 +83,15 @@ inline const LineDef_s *WadLevel_c::GetLineDefs() const
 inline const size_t WadLevel_c::GetNumLineDefs() const
 {
 	return vecLineDefs.size();
+}
+
+inline const SideDef_s *WadLevel_c::GetSideDefs() const
+{
+	return &vecSideDefs[0];
+}
+inline const size_t WadLevel_c::GetNumSideDefs() const
+{
+	return vecSideDefs.size();
 }
 
 inline const Vertex_s *WadLevel_c::GetVertices() const

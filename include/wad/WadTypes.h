@@ -1,10 +1,55 @@
 #ifndef WAD_TYPES_H
 #define WAD_TYPES_H
 
+typedef signed char int8_t;
+typedef unsigned char uint8_t;
 typedef short int16_t;
 typedef unsigned short uint16_t;
 typedef int int32_t;
 typedef unsigned int uint32_t;
+typedef unsigned long long uint64_t;
+
+#ifndef strncpy
+#include <string.h>
+#endif
+
+union Name_u
+{
+	Name_u():
+		uName(0)
+	{
+	}
+
+	Name_u(const char *archName)
+	{
+		uName = 0;
+		strncpy(this->archName, archName, 8);
+	}
+
+	#pragma pack(push)
+	#pragma pack(1)
+	//name of the lump
+	char	 archName[8];
+	uint64_t uName;
+	#pragma pack(pop)
+};
+
+struct LumpInfo_s
+{
+	int32_t iNum;
+	int32_t iOffset;
+};
+
+struct Directory_s
+{
+	//Offset of the lump
+	int32_t iOffset;
+
+	//lump size
+	int32_t iSize;
+	
+	Name_u unName;	
+};
 
 struct Thing_s
 {
@@ -102,18 +147,20 @@ struct GLSubSector3_s
    uint32_t iFirstSeg;
 };
 
+
 struct Sector_s
 {
 	int16_t iFloorHeight;
 	int16_t iCeilHeight;
-
-	char	archFloorTexture[8];
-	char	archCeilTexture[8];
+	
+	Name_u unFloorTexture;
+	Name_u unCeilTexture;	
 
 	int16_t iLightLevel;
 	uint16_t uType;
 	uint16_t uTag;
 };
+
 
 enum LevelLumps_e
 {
@@ -134,6 +181,54 @@ enum LevelLumps_e
   LL_GL_SSECTORS,
   LL_GL_NODES,
   LL_GL_PVS
+};
+
+#pragma pack(push)
+#pragma pack(1)
+struct Texture_s
+{
+	Name_u unName;
+
+	uint32_t uMasked;
+	uint16_t uWidth;
+	uint16_t uHeight;
+
+	//obsolete, ignore
+	uint32_t uColumnDirectory;
+
+	uint16_t uPatchCount;
+};
+#pragma pack(pop)
+
+struct TexturePatch_s
+{
+	int16_t iOriginX;
+	int16_t iOriginY;
+
+	uint16_t uPatch;
+
+	int16_t iStepDir;
+	uint16_t uColormap;
+};
+
+struct Patch_s
+{ 
+    int16_t iWidth;
+    int16_t iHeight; 
+    int16_t iLeftOffset;
+    int16_t iTopOffset;        
+};
+
+struct SideDef_s
+{
+	int16_t iOffsetX;
+	int16_t iOffsety;
+
+	Name_u uUpperTexture;
+	Name_u uLowerTexture;
+	Name_u uMiddleTexture;
+
+	int16_t iSector;
 };
 
 #endif
