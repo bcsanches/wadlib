@@ -1,6 +1,8 @@
 #include "WadFile.h"
 
 #include <sstream>
+#include <cstring>
+#include <stdexcept>
 
 #include "ITexture.h"
 #include "WadLevel.h"
@@ -9,7 +11,7 @@ WadFile_c::WadFile_c(const char *fileName):
 	clFile(fileName, std::ios_base::binary | std::ios_base::in)
 {
 	if(!clFile.is_open())
-		throw std::exception("Cannot open file");
+		throw std::runtime_error("Cannot open file");
 
 	char id[4];
 	clFile.read(id, 4);
@@ -19,7 +21,7 @@ WadFile_c::WadFile_c(const char *fileName):
 	else if(strncmp(id, "IWAD", 4) ==0)
 		eType = WT_REGULAR;
 	else
-		throw std::exception("File is not WAD");
+		throw std::runtime_error("File is not WAD");
 
 	clFile.read(reinterpret_cast<char *>(&stLumpInfo), sizeof(stLumpInfo));
 
@@ -32,12 +34,12 @@ WadFile_c::WadFile_c(const char *fileName):
 	pstFEnd = this->FindLump("F_END");
 
 	this->ReadRawLump(vecColorMap, "COLORMAP");
-	this->ReadRawLump(vecPalette, "PLAYPAL");	
+	this->ReadRawLump(vecPalette, "PLAYPAL");
 }
 
 void WadFile_c::ReadRawLump(std::vector<uint8_t> &dest, const char *szName)
 {
-	const Directory_s *directory = this->FindLump(szName);	
+	const Directory_s *directory = this->FindLump(szName);
 
 	dest.resize(directory->iSize);
 	this->ReadLump(reinterpret_cast<char *>(&dest[0]), *directory, NULL);
@@ -50,11 +52,11 @@ const Directory_s *WadFile_c::FindLump(const char *name) const
 		if(strncmp(vecDirectories[i].archName, name, 8) == 0)
 			return &vecDirectories[i];
 	}
-	
+
 	std::stringstream stream;
 	stream << "Lump " << std::string(name, 8) << " not found.";
-		
-	throw std::exception(stream.str().c_str());	
+
+	throw std::runtime_error(stream.str().c_str());
 }
 
 const Directory_s *WadFile_c::FindLump(const char *name, const Directory_s *begin, const Directory_s *end) const
@@ -67,14 +69,14 @@ const Directory_s *WadFile_c::FindLump(const char *name, const Directory_s *begi
 
 	std::stringstream stream;
 	stream << "Lump " << std::string(name, 8) << " not found.";
-		
-	throw std::exception(stream.str().c_str());	
+
+	throw std::runtime_error(stream.str().c_str());
 }
 
 void WadFile_c::LoadLevel(WadLevel_c &level, const char *name)
-{	
-	const Directory_s *dir = this->FindLump(name);		
-	
+{
+	const Directory_s *dir = this->FindLump(name);
+
 	level.Load(*this, dir, (&vecDirectories.back() - dir)+1);
 }
 
@@ -91,7 +93,7 @@ void WadFile_c::ReadLump(char *dest, const Directory_s &dir, const char *szMagic
 		{
 			std::stringstream stream;
 			stream << "Magic " << szMagic << " failed." << std::endl;
-			throw std::exception(stream.str().c_str());				
+			throw std::runtime_error(stream.str().c_str());
 		}
 
 		magicSize = strlen(szMagic);
@@ -102,7 +104,7 @@ void WadFile_c::ReadLump(char *dest, const Directory_s &dir, const char *szMagic
 
 void WadFile_c::LoadFlat(ITexture_c &texture, const char *pchName)
 {
-	const Directory_s *flatDirectory = this->FindLump(pchName, pstFStart+1, pstFEnd);	
+	const Directory_s *flatDirectory = this->FindLump(pchName, pstFStart+1, pstFEnd);
 
 	texture.SetSize(64, 64);
 

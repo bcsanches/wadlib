@@ -2,7 +2,7 @@
 #define WAD_FILE_H
 
 #include <fstream>
-#include <SDL.h>
+#include "WadTypes.h"
 
 #include <vector>
 
@@ -44,14 +44,14 @@ class WadFile_c
 		WadFile_c(const char *fileName);
 
 		void LoadLevel(WadLevel_c &level, const char *name);
-		void ReadLump(char *dest, const Directory_s &dir, const char *szMagic); 
-		
+		void ReadLump(char *dest, const Directory_s &dir, const char *szMagic);
+
 		void LoadFlat(ITexture_c &texture, const char *pchName);
 
 		const Directory_s *FlatBegin();
 		const Directory_s *FlatEnd();
 
-	private:		
+	private:
 		const Directory_s *FindLump(const char *name, const Directory_s *begin, const Directory_s *end) const;
 		const Directory_s *FindLump(const char *name) const;
 
@@ -60,7 +60,7 @@ class WadFile_c
 	private:
 		std::ifstream clFile;
 
-		WadTypes_e eType;		
+		WadTypes_e eType;
 
 		LumpInfo_s stLumpInfo;
 
