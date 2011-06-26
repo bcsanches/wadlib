@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\include\wad\&quot;"
-				PreprocessorDefinitions="WIN32;_LIB"
+				PreprocessorDefinitions="WIN32;_LIB;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="2"
@@ -178,6 +178,14 @@
 			</File>
 			<File
 				RelativePath="..\..\include\wad\WadLevel.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\wad\WadPatch.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\wad\WadPatch.h"
 				>
 			</File>
 			<File

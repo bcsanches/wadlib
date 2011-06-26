@@ -1,3 +1,18 @@
+/*
+wadlib
+Copyright (c) 2011 Bruno Sanches  http://code.google.com/p/wadlib
+
+This software is provided 'as-is', without any express or implied warranty.
+In no event will the authors be held liable for any damages arising from the use of this software.
+Permission is granted to anyone to use this software for any purpose, 
+including commercial applications, and to alter it and redistribute it freely, 
+subject to the following restrictions:
+
+1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not required.
+2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
+3. This notice may not be removed or altered from any source distribution.
+*/
+
 #include <SDL.h>
 #include <SDL_gfxPrimitives.h>
 
@@ -94,39 +109,103 @@ void SDLTexture_c::Save(const char *szFileName)
 
 struct FlatNameFunctor_s
 {
-	bool operator()(const char *pchLhs, const char *pchRhs)const
+	bool operator()(const Name_u &lhs, const Name_u &rhs)const
 	{
-		return strncmp(pchLhs, pchRhs, 8) < 0;
+		return lhs.uName < rhs.uName;
 	}
 };
 
-typedef std::set<const char *, FlatNameFunctor_s> FlatNameSet_t;
+typedef std::set<Name_u, FlatNameFunctor_s> NameSet_t;
 
-static void ExportFlat(SDLTexture_c &texture,  WadFile_c &file, FlatNameSet_t &setExportedFlats,  const char *pchName)
+static void SaveTexture(SDLTexture_c &texture, Name_u name)
 {
-	FlatNameSet_t::iterator it = setExportedFlats.lower_bound(pchName);
-	if((it != setExportedFlats.end()) && (!setExportedFlats.key_comp()(pchName, *it)))
+	char szFileName[13] = {0};
+	memcpy(szFileName, name.archName, 8);
+	strcat(szFileName, ".bmp");
+
+	std::cout << szFileName << std::endl;
+	texture.Save(szFileName);
+}
+
+static void ExportFlat(SDLTexture_c &texture,  WadFile_c &file, NameSet_t &setExportedFlats,  Name_u name)
+{
+	NameSet_t::iterator it = setExportedFlats.lower_bound(name);
+	if((it != setExportedFlats.end()) && (!setExportedFlats.key_comp()(name, *it)))
 	{
 		//already exists, ignore
 	}
 	else
 	{
-		file.LoadFlat(texture, pchName);
+		setExportedFlats.insert(it, name);
+		try
+		{
+			file.LoadFlat(texture, name);
+		}
+		catch(std::exception &e)
+		{
+			std::string name(name.archName, 8);
+			std::cout << "Error exporting " << name.c_str() << ": " << e.what() << std::endl;
+			return;
+		}		
 
-		setExportedFlats.insert(it, pchName);		
-
-		char szFileName[13] = {0};
-		memcpy(szFileName, pchName, 8);
-		strcat(szFileName, ".bmp");
-
-		std::cout << szFileName << std::endl;
-		texture.Save(szFileName);
+		SaveTexture(texture, name);		
 	}
+}
+
+static void ExportWall(SDLTexture_c &texture,  WadFile_c &file, NameSet_t &setExportedWalls,  Name_u name)
+{
+	NameSet_t::iterator it = setExportedWalls.lower_bound(name);
+	if((it != setExportedWalls.end()) && (!setExportedWalls.key_comp()(name, *it)))
+	{
+		//already exists, ignore
+	}
+	else
+	{
+		//store if first, if an error happens, we do not keep reporting it
+		setExportedWalls.insert(it, name);		
+		try
+		{
+			file.LoadTexture(texture, file.FindTextureIndex(name));
+		}
+		catch(std::exception &e)
+		{
+			std::string name(name.archName, 8);
+			std::cout << "Error exporting " << name.c_str() << ": " << e.what() << std::endl;
+			return;
+		}		
+
+		SaveTexture(texture, name);		
+	}
+}
+
+static void ExportWalls(const WadLevel_c &level, WadFile_c &file)
+{
+	std::cout << "Exporting current level walls:" << std::endl;
+
+	NameSet_t setExportedWalls;
+	SDLTexture_c texture;
+
+	const SideDef_s *sides = level.GetSideDefs();
+	for(size_t i = 0;i < level.GetNumSideDefs(); ++i)
+	{
+		const SideDef_s *side = sides+i;
+
+		if(side->uLowerTexture.archName[0] != '-')
+			ExportWall(texture, file, setExportedWalls, side->uLowerTexture);
+
+		if(side->uMiddleTexture.archName[0] != '-')
+			ExportWall(texture, file, setExportedWalls, side->uMiddleTexture);
+
+		if(side->uUpperTexture.archName[0] != '-')
+			ExportWall(texture, file, setExportedWalls, side->uUpperTexture);
+	}
+
+	std::cout << "Done." << std::endl;
 }
 
 static void ExportFlats(const WadLevel_c &level, WadFile_c &file)
 {
-	FlatNameSet_t setExportedFlats;
+	NameSet_t setExportedFlats;
 
 	SDLTexture_c texture;
 
@@ -134,24 +213,50 @@ static void ExportFlats(const WadLevel_c &level, WadFile_c &file)
 	const Sector_s *sectors = level.GetSectors();
 	for(size_t i = 0;i < level.GetNumSectors(); ++i)
 	{
+		size_t sz = sizeof(Sector_s);
 		const Sector_s &sector = sectors[i];
 
-		ExportFlat(texture, file, setExportedFlats, sector.archFloorTexture);
-		ExportFlat(texture, file, setExportedFlats, sector.archCeilTexture);				
+		ExportFlat(texture, file, setExportedFlats, sector.unCeilTexture);
+		ExportFlat(texture, file, setExportedFlats, sector.unCeilTexture);				
 	}
+	std::cout << "Done." << std::endl;
+}
+
+static void ExportAllWalls(WadFile_c &wad)
+{
+	std::cout << "Exporting " << wad.GetNumTextures() << " textures:" << std::endl;
+
+	SDLTexture_c texture;
+	for(int i = 0, len = wad.GetNumTextures();i < len; ++i)
+	{		
+		Name_u texName = wad.GetTextureName(i);
+		try
+		{
+			wad.LoadTexture(texture, i);	
+		}
+		catch(std::exception &e)
+		{
+			std::string name(texName.archName, 8);
+			std::cout << "Error exporting " << name.c_str() << ": " << e.what() << std::endl;
+			continue;
+		}		
+
+		SaveTexture(texture, texName);
+	}
+
 	std::cout << "Done." << std::endl;
 }
 
 static void ExportAllFlats(WadFile_c &file)
 {
-	FlatNameSet_t setExportedFlats;
+	NameSet_t setExportedFlats;
 
 	SDLTexture_c texture;
 
 	std::cout << "Exporting WAD flats:" << std::endl;
 	for(const Directory_s *flat = file.FlatBegin(), *end = file.FlatEnd(); flat != end; ++flat)
 	{
-		ExportFlat(texture, file, setExportedFlats, flat->archName);
+		ExportFlat(texture, file, setExportedFlats, flat->unName);
 	}
 	std::cout << "Done." << std::endl;
 }
@@ -363,16 +468,22 @@ int main(int argc, char **argv)
 			{
 				switch(ev.type)
 				{
+					case SDL_KEYUP:
+						printf("Keyup %d\n", ev.key.keysym.sym);
+						break;
 					case SDL_KEYDOWN:
+						printf("Keydown %d\n", ev.key.keysym.sym);
 						if(ev.key.keysym.sym == SDLK_ESCAPE)
 							quit = true;
 
 						if((ev.key.keysym.sym == SDLK_e) && (ev.key.keysym.mod & KMOD_SHIFT))
-						{
+						{							
 							ExportAllFlats(wad);
+							ExportAllWalls(wad);
 						}
 						if((ev.key.keysym.sym == SDLK_e) && !(ev.key.keysym.mod & KMOD_SHIFT))
 						{
+							ExportWalls(level, wad);
 							ExportFlats(level, wad);
 						}
 						if(ev.key.keysym.sym == SDLK_n)

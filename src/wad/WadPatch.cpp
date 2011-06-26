@@ -14,20 +14,17 @@ subject to the following restrictions:
 */
 
 
-#ifndef ITEXTURE_H
-#define ITEXTURE_H
+#include "WadPatch.h"
 
-#include "WadTypes.h"
+#include "WadFile.h"
 
-class ITexture_c
+void WadPatch_c::Load(WadFile_c &file, const Directory_s &patchDir)
 {
-	public:
-		virtual ~ITexture_c(){};
+	const size_t headerSize = sizeof(stHeader);
 
-		virtual void SetSize(uint16_t w, uint16_t h) = 0;
-		virtual void *GetPixels() = 0;
+	vecData.resize(patchDir.iSize - headerSize);
+	file.ReadLump(reinterpret_cast<char *>(&stHeader), headerSize, reinterpret_cast<char *>(&vecData[0]), patchDir);
 
-		virtual void SetPalette(const void *) = 0;
-};
-
-#endif
+	piOffset = reinterpret_cast<uint32_t *>(&vecData[0]);
+	puPixels = &vecData[stHeader.iWidth * 4];
+}

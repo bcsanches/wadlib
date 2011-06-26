@@ -12,22 +12,3 @@ subject to the following restrictions:
 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 3. This notice may not be removed or altered from any source distribution.
 */
-
-
-#ifndef ITEXTURE_H
-#define ITEXTURE_H
-
-#include "WadTypes.h"
-
-class ITexture_c
-{
-	public:
-		virtual ~ITexture_c(){};
-
-		virtual void SetSize(uint16_t w, uint16_t h) = 0;
-		virtual void *GetPixels() = 0;
-
-		virtual void SetPalette(const void *) = 0;
-};
-
-#endif

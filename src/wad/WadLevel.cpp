@@ -1,3 +1,19 @@
+/*
+wadlib
+Copyright (c) 2011 Bruno Sanches  http://code.google.com/p/wadlib
+
+This software is provided 'as-is', without any express or implied warranty.
+In no event will the authors be held liable for any damages arising from the use of this software.
+Permission is granted to anyone to use this software for any purpose, 
+including commercial applications, and to alter it and redistribute it freely, 
+subject to the following restrictions:
+
+1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not required.
+2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
+3. This notice may not be removed or altered from any source distribution.
+*/
+
+
 #include "WadLevel.h"
 
 #include "WadFile.h"
@@ -33,7 +49,7 @@ static const char *pszLumpsNames_gl[] =
 template<typename T>
 void WadLevel_c::LoadLump(std::vector<T> &dest, LevelLumps_e lump, WadFile_c &file, const Directory_s *levelDir, const char *szMagic)
 {
-	if(strncmp(levelDir[lump].archName, pszLumpsNames_gl[lump], 8))
+	if(strncmp(levelDir[lump].unName.archName, pszLumpsNames_gl[lump], 8))
 	{
 		std::stringstream stream;
 		stream << pszLumpsNames_gl[lump] << " not found";
@@ -49,6 +65,7 @@ void WadLevel_c::Load(WadFile_c &file, const Directory_s *levelDir, size_t numDi
 {
 	LoadLump(vecThings, LL_THINGS, file, levelDir);
 	LoadLump(vecLineDefs, LL_LINEDEFS, file, levelDir);
+	LoadLump(vecSideDefs, LL_SIDEDEFS, file, levelDir);
 	LoadLump(vecVertices, LL_VERTICES, file, levelDir);
 	LoadLump(vecSegments, LL_SEGS, file, levelDir);
 	LoadLump(vecSubSectors, LL_SSECTORS, file, levelDir);
@@ -56,7 +73,7 @@ void WadLevel_c::Load(WadFile_c &file, const Directory_s *levelDir, size_t numDi
 	LoadLump(vecSectors, LL_SECTORS, file, levelDir);
 
 	//Do we have GL data?
-	if((LL_GL_NAME < numDirectories) && (strncmp(levelDir[LL_GL_NAME].archName, pszLumpsNames_gl[LL_GL_NAME], 8) == 0))
+	if((LL_GL_NAME < numDirectories) && (strncmp(levelDir[LL_GL_NAME].unName.archName, pszLumpsNames_gl[LL_GL_NAME], 8) == 0))
 	{
 		LoadLump(vecGLVertices, LL_GL_VERT, file, levelDir, "gNd5");
 		LoadLump(vecGLSegments, LL_GL_SEGS, file, levelDir);
