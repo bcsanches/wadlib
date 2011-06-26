@@ -1,0 +1,8 @@
+wadlib
+
+Tools for converting Doom maps to 3d meshes, the project aim to create a conversion tool to convert doom maps, textures, etc, to modern formats, to allow the rendering in modern APIs.
+
+This is not a Doom port, just a tool for creating triangle meshes from doom maps and playing with it on modern engines.
+Free for commercial use, open source under the ZLib License.
+
+http://code.google.com/p/wadlib
