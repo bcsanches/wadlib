@@ -26,9 +26,7 @@ typedef int int32_t;
 typedef unsigned int uint32_t;
 typedef unsigned long long uint64_t;
 
-#ifndef strncpy
-#include <string.h>
-#endif
+#include <string>
 
 union Name_u
 {
@@ -41,6 +39,11 @@ union Name_u
 	{
 		uName = 0;
 		strncpy(this->archName, archName, 8);
+	}
+
+	std::string ToString() const
+	{
+		return std::string(archName, 8);
 	}
 
 	#pragma pack(push)

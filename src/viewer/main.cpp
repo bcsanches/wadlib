@@ -23,6 +23,7 @@ subject to the following restrictions:
 #include "ITexture.h"
 #include "WadFile.h"
 #include "WadLevel.h"
+#include "OgreExporter.h"
 #include "Vector2d.h"
 
 enum DrawFlags_e
@@ -418,19 +419,20 @@ int main(int argc, char **argv)
 
 	if(argc < 3)
 	{
-		cerr << "Insuficient parameters, usage: wadloader <wadname> <levelname>" << endl;
+		cerr << "Insuficient parameters, usage: wadloader <wadname> <exportFolder> <levelname0> [levelname1] ... [levelnamen]" << endl;
 		
 		return EXIT_FAILURE;
 	}
 
 	std::vector<const char *> levelsNames;
-	for(int i =  2;i < argc; ++i)
+	for(int i =  3;i < argc; ++i)
 		levelsNames.push_back(argv[i]);
 
 	int currentLevel = 0;
 
 	WadFile_c wad(argv[1]);
 	WadLevel_c level;
+	OgreExporter_c exporter(argv[2]);
 
 	try
 	{
@@ -475,6 +477,11 @@ int main(int argc, char **argv)
 						printf("Keydown %d\n", ev.key.keysym.sym);
 						if(ev.key.keysym.sym == SDLK_ESCAPE)
 							quit = true;
+
+						if(ev.key.keysym.sym == SDLK_a)
+						{
+							exporter.ExportLevel(level, wad);
+						}
 
 						if((ev.key.keysym.sym == SDLK_e) && (ev.key.keysym.mod & KMOD_SHIFT))
 						{							

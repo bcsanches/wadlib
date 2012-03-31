@@ -8,3 +8,7 @@ glob:project/wadloader.suo
 glob:lib/
 glob:project/wadlib/wadlib.vcproj.mordor.bcsanches.user
 glob:project/wadloader.vcproj.mordor.bcsanches.user
+glob:project/ogreexport/Debug/
+glob:project/ogreexport/ogreexport.vcproj.mordor.bcsanches.user
+glob:project/ogreexportlib/Debug/
+glob:project/ogreexportlib/ogreexportlib.vcproj.mordor.bcsanches.user

@@ -60,6 +60,11 @@ class WadLevel_c
 		inline const Sector_s *GetSectors() const;
 		inline const size_t GetNumSectors() const;
 
+		inline const char *GetName() const
+		{
+			return strName.c_str();
+		}
+
 	private:
 		template<typename T>
 		void LoadLump(std::vector<T> &dest, LevelLumps_e lump, WadFile_c &file, const Directory_s *levelDir, const char *szMagic = NULL);		
@@ -80,6 +85,8 @@ class WadLevel_c
 
 		Vertex_s stMin;
 		Vertex_s stMax;		
+
+		std::string strName;
 };
 
 inline const Vertex_s &WadLevel_c::GetMin() const

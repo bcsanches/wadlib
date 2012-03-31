@@ -62,7 +62,9 @@ void WadLevel_c::LoadLump(std::vector<T> &dest, LevelLumps_e lump, WadFile_c &fi
 }
 
 void WadLevel_c::Load(WadFile_c &file, const Directory_s *levelDir, size_t numDirectories)
-{
+{	
+	strName.assign(levelDir->unName.archName, 8);
+
 	LoadLump(vecThings, LL_THINGS, file, levelDir);
 	LoadLump(vecLineDefs, LL_LINEDEFS, file, levelDir);
 	LoadLump(vecSideDefs, LL_SIDEDEFS, file, levelDir);
