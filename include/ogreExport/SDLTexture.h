@@ -1,6 +1,6 @@
 /*
 wadlib
-Copyright (c) 2011 Bruno Sanches  http://code.google.com/p/wadlib
+Copyright (c) 2012 Bruno Sanches  http://code.google.com/p/wadlib
 
 This software is provided 'as-is', without any express or implied warranty.
 In no event will the authors be held liable for any damages arising from the use of this software.
@@ -13,18 +13,26 @@ subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 */
 
+#ifndef SDL_TEXTURE_H
+#define SDL_TEXTURE_H
 
-#include "WadPatch.h"
+#include <ITexture.h>
 
-#include "WadFile.h"
+#include <SDL.h>
 
-void WadPatch_c::Load(const WadFile_c &file, const Directory_s &patchDir)
+class SDLTexture_c: public ITexture_c
 {
-	const size_t headerSize = sizeof(stHeader);
+	public:
+		SDLTexture_c();
+		virtual ~SDLTexture_c();
 
-	vecData.resize(patchDir.iSize - headerSize);
-	file.ReadLump(reinterpret_cast<char *>(&stHeader), headerSize, reinterpret_cast<char *>(&vecData[0]), patchDir);
+		virtual void SetSize(uint16_t w, uint16_t h);
+		virtual void *GetPixels();
+		virtual void SetPalette(const void *);
 
-	piOffset = reinterpret_cast<uint32_t *>(&vecData[0]);
-	puPixels = &vecData[stHeader.iWidth * 4];
-}
+		void Save(const char *szFileName);
+	private:
+		SDL_Surface *pstSurface;
+};
+
+#endif

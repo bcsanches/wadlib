@@ -27,6 +27,7 @@ typedef unsigned int uint32_t;
 typedef unsigned long long uint64_t;
 
 #include <string>
+#include <string.h>
 
 union Name_u
 {
@@ -43,7 +44,11 @@ union Name_u
 
 	std::string ToString() const
 	{
-		return std::string(archName, 8);
+		char temp[9];
+		strncpy(temp, archName, 8);
+		temp[8] = 0;
+
+		return std::string(temp);
 	}
 
 	#pragma pack(push)

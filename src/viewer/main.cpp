@@ -24,6 +24,7 @@ subject to the following restrictions:
 #include "WadFile.h"
 #include "WadLevel.h"
 #include "OgreExporter.h"
+#include "SDLTexture.h"
 #include "Vector2d.h"
 
 enum DrawFlags_e
@@ -39,95 +40,7 @@ enum DrawFlags_e
 //"C:\games\DOOM Ultimate\Doom.wad" E1M1 E1M2 E1M3 E1M4 E1M5 E1M6 E1M7 E1M8 E1M9 E2M1 E2M2 E2M3 E2M4 E2M5 E2M6 E2M7 E2M8 E2M9 E3M1 E3M2 E3M3 E3M4 E3M5 E3M6 E3M7 E3M8 E3M9 E4M1 E4M2 E4M3 E4M4 E4M5 E4M6 E4M7 E4M8 E4M9
 //"C:\games\DOOM 2\doom2.wad" MAP01 MAP02 MAP03 MAP04 MAP05 MAP06 MAP07 MAP08 MAP09 MAP10 MAP11 MAP12 MAP13 MAP14 MAP15 MAP16 MAP17 MAP18 MAP19 MAP20 MAP21 MAP22 MAP23 MAP24 MAP25 MAP26 MAP27 MAP28 MAP29 MAP30 MAP31 MAP32
 
-class SDLTexture_c: public ITexture_c
-{
-	public:
-		SDLTexture_c();
-		virtual ~SDLTexture_c();
-
-		virtual void SetSize(uint16_t w, uint16_t h);
-		virtual void *GetPixels();
-		virtual void SetPalette(const void *);
-
-		void Save(const char *szFileName);
-	private:
-		SDL_Surface *pstSurface;
-};
-
-SDLTexture_c::SDLTexture_c():
-	pstSurface(NULL)
-{	
-	//empty
-}
-
-SDLTexture_c::~SDLTexture_c()
-{
-	SDL_FreeSurface(pstSurface);
-}
-
-void SDLTexture_c::SetSize(uint16_t w, uint16_t h)
-{
-	if(pstSurface)
-	{
-		if((pstSurface->w == w) && (pstSurface->h == h))
-			return;
-
-		SDL_FreeSurface(pstSurface);
-		pstSurface = NULL;
-	}
-
-	pstSurface = SDL_CreateRGBSurface(0, w, h, 8, 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF);
-}
-
-void *SDLTexture_c::GetPixels()
-{
-	assert(pstSurface != NULL);
-
-	return pstSurface->pixels;
-}
-
-void SDLTexture_c::SetPalette(const void *data)
-{
-	assert(pstSurface != NULL);
-	
-	const uint8_t *rgb = reinterpret_cast<const uint8_t*>(data);
-	SDL_Color *palette = pstSurface->format->palette->colors;
-	for(int i = 0;i < 256;++i)
-	{
-		palette[i].r = rgb[0];
-		palette[i].g = rgb[1];
-		palette[i].b = rgb[2];
-		palette[i].unused = 0;
-
-		rgb += 3;
-	}	
-}
-
-void SDLTexture_c::Save(const char *szFileName)
-{
-	SDL_SaveBMP(pstSurface, szFileName);
-}
-
-struct FlatNameFunctor_s
-{
-	bool operator()(const Name_u &lhs, const Name_u &rhs)const
-	{
-		return lhs.uName < rhs.uName;
-	}
-};
-
-typedef std::set<Name_u, FlatNameFunctor_s> NameSet_t;
-
-static void SaveTexture(SDLTexture_c &texture, Name_u name)
-{
-	char szFileName[13] = {0};
-	memcpy(szFileName, name.archName, 8);
-	strcat(szFileName, ".bmp");
-
-	std::cout << szFileName << std::endl;
-	texture.Save(szFileName);
-}
-
+/*
 static void ExportFlat(SDLTexture_c &texture,  WadFile_c &file, NameSet_t &setExportedFlats,  Name_u name)
 {
 	NameSet_t::iterator it = setExportedFlats.lower_bound(name);
@@ -151,57 +64,6 @@ static void ExportFlat(SDLTexture_c &texture,  WadFile_c &file, NameSet_t &setEx
 
 		SaveTexture(texture, name);		
 	}
-}
-
-static void ExportWall(SDLTexture_c &texture,  WadFile_c &file, NameSet_t &setExportedWalls,  Name_u name)
-{
-	NameSet_t::iterator it = setExportedWalls.lower_bound(name);
-	if((it != setExportedWalls.end()) && (!setExportedWalls.key_comp()(name, *it)))
-	{
-		//already exists, ignore
-	}
-	else
-	{
-		//store if first, if an error happens, we do not keep reporting it
-		setExportedWalls.insert(it, name);		
-		try
-		{
-			file.LoadTexture(texture, file.FindTextureIndex(name));
-		}
-		catch(std::exception &e)
-		{
-			std::string name(name.archName, 8);
-			std::cout << "Error exporting " << name.c_str() << ": " << e.what() << std::endl;
-			return;
-		}		
-
-		SaveTexture(texture, name);		
-	}
-}
-
-static void ExportWalls(const WadLevel_c &level, WadFile_c &file)
-{
-	std::cout << "Exporting current level walls:" << std::endl;
-
-	NameSet_t setExportedWalls;
-	SDLTexture_c texture;
-
-	const SideDef_s *sides = level.GetSideDefs();
-	for(size_t i = 0;i < level.GetNumSideDefs(); ++i)
-	{
-		const SideDef_s *side = sides+i;
-
-		if(side->uLowerTexture.archName[0] != '-')
-			ExportWall(texture, file, setExportedWalls, side->uLowerTexture);
-
-		if(side->uMiddleTexture.archName[0] != '-')
-			ExportWall(texture, file, setExportedWalls, side->uMiddleTexture);
-
-		if(side->uUpperTexture.archName[0] != '-')
-			ExportWall(texture, file, setExportedWalls, side->uUpperTexture);
-	}
-
-	std::cout << "Done." << std::endl;
 }
 
 static void ExportFlats(const WadLevel_c &level, WadFile_c &file)
@@ -260,7 +122,7 @@ static void ExportAllFlats(WadFile_c &file)
 		ExportFlat(texture, file, setExportedFlats, flat->unName);
 	}
 	std::cout << "Done." << std::endl;
-}
+}*/
 
 static void DrawLevel(const WadLevel_c &level, SDL_Surface *screen, uint32_t flags)
 {
@@ -485,13 +347,13 @@ int main(int argc, char **argv)
 
 						if((ev.key.keysym.sym == SDLK_e) && (ev.key.keysym.mod & KMOD_SHIFT))
 						{							
-							ExportAllFlats(wad);
-							ExportAllWalls(wad);
+							//ExportAllFlats(wad);
+							//ExportAllWalls(wad);
 						}
 						if((ev.key.keysym.sym == SDLK_e) && !(ev.key.keysym.mod & KMOD_SHIFT))
 						{
-							ExportWalls(level, wad);
-							ExportFlats(level, wad);
+							//ExportWalls(level, wad);
+							//ExportFlats(level, wad);
 						}
 						if(ev.key.keysym.sym == SDLK_n)
 						{

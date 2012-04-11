@@ -24,7 +24,8 @@ subject to the following restrictions:
 #include "WadLevel.h"
 
 WadFile_c::WadFile_c(const char *fileName):
-	clFile(fileName, std::ios_base::binary | std::ios_base::in)
+	clFile(fileName, std::ios_base::binary | std::ios_base::in),
+	strFileName(fileName)
 {
 	if(!clFile.is_open())
 		throw std::runtime_error("Cannot open file");
@@ -155,14 +156,14 @@ void WadFile_c::LoadLevel(WadLevel_c &level, const char *name)
 	level.Load(*this, dir, (&vecDirectories.back() - dir)+1);
 }
 
-void WadFile_c::ReadLump(char *header, size_t headerSize, char *data, const Directory_s &dir)
+void WadFile_c::ReadLump(char *header, size_t headerSize, char *data, const Directory_s &dir) const
 {
 	clFile.seekg(dir.iOffset);
 	clFile.read(header, headerSize);
 	clFile.read(data, dir.iSize - headerSize);
 }
 
-void WadFile_c::ReadLump(char *dest, const Directory_s &dir, const char *szMagic)
+void WadFile_c::ReadLump(char *dest, const Directory_s &dir, const char *szMagic) const
 {
 	clFile.seekg(dir.iOffset);
 
@@ -212,9 +213,9 @@ const Directory_s *WadFile_c::FlatEnd()
 	return pstFEnd;
 }
 
-void WadFile_c::LoadTexture(ITexture_c &texture, uint32_t index)
+void WadFile_c::LoadTexture(ITexture_c &texture, uint32_t index) const
 {
-	Texture_s &textureInfo = vecTextures[index];
+	const Texture_s &textureInfo = vecTextures[index];
 
 	//texture.SetSize(textureInfo.uHeight, textureInfo.uWidth);	
 	texture.SetSize(textureInfo.uWidth, textureInfo.uHeight);	
@@ -222,7 +223,7 @@ void WadFile_c::LoadTexture(ITexture_c &texture, uint32_t index)
 	std::size_t pixelCount = 0;
 	for(int i = 0;i < textureInfo.uPatchCount; ++i)
 	{
-		TexturePatch_s &texPatch = vecTexturePatches[vecTexturesPatchesIndex[index] + i];
+		const TexturePatch_s &texPatch = vecTexturePatches[vecTexturesPatchesIndex[index] + i];
 
 		const WadPatch_c &realPatch = this->GetPatch(vecPatchLumps[texPatch.uPatch]);
 		
@@ -313,7 +314,7 @@ uint32_t WadFile_c::FindTextureIndex(Name_u name) const
 	throw std::runtime_error(stream.str());
 }
 
-const WadPatch_c &WadFile_c::GetPatch(const Name_u &name)
+const WadPatch_c &WadFile_c::GetPatch(const Name_u &name) const
 {
 	WadPatchMap_t::iterator it = mapWadPatches.lower_bound(name.uName);
 	if((it != mapWadPatches.end()) && (!mapWadPatches.key_comp()(name.uName, it->first)))
@@ -328,4 +329,9 @@ const WadPatch_c &WadFile_c::GetPatch(const Name_u &name)
 
 		return patch;
 	}
+}
+
+const std::string &WadFile_c::GetFileName() const
+{
+	return strFileName;
 }

@@ -45,11 +45,11 @@ class WadFile_c
 		WadFile_c(const char *fileName);
 
 		void LoadLevel(WadLevel_c &level, const char *name);
-		void ReadLump(char *dest, const Directory_s &dir, const char *szMagic);
-		void ReadLump(char *header, size_t headerSize, char *data, const Directory_s &dir);
+		void ReadLump(char *dest, const Directory_s &dir, const char *szMagic) const;
+		void ReadLump(char *header, size_t headerSize, char *data, const Directory_s &dir) const;
 
 		void LoadFlat(ITexture_c &texture, Name_u name);
-		void LoadTexture(ITexture_c &texture, uint32_t index);
+		void LoadTexture(ITexture_c &texture, uint32_t index) const;
 		
 		Name_u GetTextureName(uint32_t index) const;
 		size_t GetNumTextures() const;
@@ -58,6 +58,8 @@ class WadFile_c
 
 		const Directory_s *FlatBegin();
 		const Directory_s *FlatEnd();		
+
+		const std::string &GetFileName() const;
 
 	private:
 		const Directory_s *FindLump(Name_u name, const Directory_s *begin, const Directory_s *end) const;
@@ -69,10 +71,12 @@ class WadFile_c
 		void LoadTexturesData(const Directory_s &textures);
 		void LoadPatchLumpsNames();
 
-		const WadPatch_c &GetPatch(const Name_u &name);
+		const WadPatch_c &GetPatch(const Name_u &name) const;
 
 	private:
-		std::ifstream clFile;
+		mutable std::ifstream clFile;
+
+		std::string strFileName;
 
 		WadTypes_e eType;
 
@@ -97,7 +101,7 @@ class WadFile_c
 		std::vector<Name_u> vecPatchLumps;
 
 		typedef std::map<uint64_t, WadPatch_c> WadPatchMap_t;
-		WadPatchMap_t mapWadPatches;
+		mutable WadPatchMap_t mapWadPatches;
 };
 
 #endif

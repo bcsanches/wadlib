@@ -27,7 +27,7 @@ class WadFile_c;
 class WadPatch_c
 {
 	public:
-		void Load(WadFile_c &file, const Directory_s &patchDir);
+		void Load(const WadFile_c &file, const Directory_s &patchDir);
 		
 		inline int GetWidth() const;
 
