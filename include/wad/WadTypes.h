@@ -51,6 +51,12 @@ union Name_u
 		return std::string(temp);
 	}
 
+	inline void MakeUpperCase()
+	{
+		for(int i = 0;i < 8 && archName[i]; ++i)
+			archName[i] = toupper(archName[i]);
+	}
+
 	#pragma pack(push)
 	#pragma pack(1)
 	//name of the lump

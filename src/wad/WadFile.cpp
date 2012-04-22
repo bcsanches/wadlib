@@ -80,6 +80,7 @@ void WadFile_c::LoadTexturesData(const Directory_s &textures)
 	for(size_t i = 0; i < numTextures; ++i, ++pos)
 	{
 		clFile.read(reinterpret_cast<char *>(&vecTextures[pos]), sizeof(Texture_s));
+		vecTextures[pos].unName.MakeUpperCase();
 
 		size_t patchPosition = vecTexturePatches.size();
 		vecTexturePatches.resize(patchPosition + vecTextures[pos].uPatchCount);
@@ -110,6 +111,8 @@ void WadFile_c::ReadRawLump(std::vector<uint8_t> &dest, const char *szName)
 
 const Directory_s *WadFile_c::TryFindLump(Name_u name) const
 {
+	name.MakeUpperCase();
+
 	for(size_t i = 0, len = vecDirectories.size();i < len; ++i)
 	{
 		//if(strncmp(vecDirectories[i].unName.archName, name, 8) == 0)
@@ -128,7 +131,7 @@ const Directory_s *WadFile_c::FindLump(Name_u name) const
 		std::stringstream stream;
 		stream << "Lump " << std::string(name.archName, 8) << " not found.";
 		
-	throw std::runtime_error(stream.str().c_str());
+		throw std::runtime_error(stream.str().c_str());
 	}
 
 	return dir;
@@ -211,6 +214,11 @@ const Directory_s *WadFile_c::FlatBegin()
 const Directory_s *WadFile_c::FlatEnd()
 {
 	return pstFEnd;
+}
+
+const Texture_s &WadFile_c::GetTextureInfo(Name_u name) const
+{
+	return vecTextures[this->FindTextureIndex(name)];
 }
 
 void WadFile_c::LoadTexture(ITexture_c &texture, uint32_t index) const
@@ -303,6 +311,8 @@ Name_u WadFile_c::GetTextureName(uint32_t index) const
 
 uint32_t WadFile_c::FindTextureIndex(Name_u name) const
 {
+	name.MakeUpperCase();
+
 	for(size_t i = 0, len = vecTextures.size();i < len; ++i)
 	{
 		if(vecTextures[i].unName.uName == name.uName)

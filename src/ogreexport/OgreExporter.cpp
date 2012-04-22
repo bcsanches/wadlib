@@ -45,8 +45,49 @@ void OgreExporter_c::CreateDirectories()
 	strMaterialTexturesDirectory = subPath.string();
 }
 
+void OgreExporter_c::ExportWallMesh(Ogre::ManualObject &manualMesh, int floorHeight, int ceilingHeight, Name_u textureName, int offsetX, int offsetY, const Vertex_s *vertices, const LineDef_s &lineDef, const WadFile_c &wad)
+{
+	std::stringstream stream;
+	stream << textureName.ToString();
+	manualMesh.begin(stream.str(), Ogre::RenderOperation::OT_TRIANGLE_LIST);
+
+	const Texture_s &tex = wad.GetTextureInfo(textureName);
+
+	const Vertex_s &startVertex = vertices[lineDef.iStartVertex];
+	const Vertex_s &endVertex = vertices[lineDef.iEndVertex];
+
+	int height = ceilingHeight - floorHeight;	
+	int width = Ogre::Vector2(startVertex.iX, startVertex.iY).distance(Ogre::Vector2(endVertex.iX, endVertex.iY));
+	
+	float offsetU = offsetX / (float) tex.uWidth;
+	float offsetV = offsetY / (float) tex.uHeight;	
+
+	float endV = (height / (float)tex.uHeight) + offsetV;
+	float endU = (width / (float) tex.uWidth) + offsetU;
+
+	manualMesh.position(-startVertex.iX, floorHeight, startVertex.iY);
+	manualMesh.textureCoord(offsetU, endV);
+
+	manualMesh.position(-startVertex.iX, ceilingHeight, startVertex.iY);
+	manualMesh.textureCoord(offsetU, offsetV);
+	
+	manualMesh.position(-endVertex.iX, ceilingHeight, endVertex.iY);
+	manualMesh.textureCoord(endU, offsetV);		
+
+	manualMesh.position(-endVertex.iX, floorHeight, endVertex.iY);
+	manualMesh.textureCoord(endU, endV);	
+
+	manualMesh.triangle(2, 1, 0);
+	manualMesh.triangle(0, 3, 2);
+
+	manualMesh.end();
+}
+
+
 void OgreExporter_c::ExportLevel(const WadLevel_c &level, const WadFile_c &file)
-{		
+{	
+	this->ExportLevelMaterials(level, file);
+
 	Ogre::DefaultHardwareBufferManager hardwareBufferManager;
 	Ogre::ManualObject manualMesh(level.GetName());	
 
@@ -60,34 +101,56 @@ void OgreExporter_c::ExportLevel(const WadLevel_c &level, const WadFile_c &file)
 	for(size_t i = 0;i < numLineDefs; ++i)
 	{
 		if(lineDefs[i].iLeftSideDef >= 0)
-			continue;
+		{
+			const SideDef_s &leftSide = sideDefs[lineDefs[i].iLeftSideDef];
+			const Sector_s &leftSideSector = sectors[leftSide.iSector];
 
-		const SideDef_s &rightSide = sideDefs[lineDefs[i].iRightSideDef];
-		const Sector_s &sector = sectors[rightSide.iSector];
+			const SideDef_s &rightSide = sideDefs[lineDefs[i].iRightSideDef];
+			const Sector_s &rightSideSector = sectors[rightSide.iSector];
 
-		std::stringstream stream ;
-		stream << rightSide.uMiddleTexture.ToString();
-		manualMesh.begin(stream.str(), Ogre::RenderOperation::OT_TRIANGLE_LIST);
 
-		const Vertex_s &startVertex = vertices[lineDefs[i].iStartVertex];
-		const Vertex_s &endVertex = vertices[lineDefs[i].iEndVertex];
+			if(leftSide.uMiddleTexture.uName != '-')
+			{
+				this->ExportWallMesh(manualMesh, leftSideSector.iFloorHeight, leftSideSector.iCeilHeight, leftSide.uMiddleTexture, leftSide.iOffsetX, leftSide.iOffsety, vertices, lineDefs[i], file);				
+			}
 
-		manualMesh.position(startVertex.iX, startVertex.iY, sector.iFloorHeight);
-		manualMesh.textureCoord(0, 0);
+			if(leftSide.uLowerTexture.uName != '-')
+			{
+				this->ExportWallMesh(manualMesh, leftSideSector.iFloorHeight, leftSideSector.iFloorHeight, leftSide.uLowerTexture, leftSide.iOffsetX, leftSide.iOffsety, vertices, lineDefs[i], file);				
+			}
 
-		manualMesh.position(startVertex.iX, startVertex.iY, sector.iCeilHeight);
-		manualMesh.textureCoord(0, 1);
+			if(leftSide.uUpperTexture.uName != '-')
+			{
+				this->ExportWallMesh(manualMesh, rightSideSector.iCeilHeight, leftSideSector.iCeilHeight, leftSide.uUpperTexture, leftSide.iOffsetX, leftSide.iOffsety, vertices, lineDefs[i], file);				
+			}
+		}
 		
-		manualMesh.position(endVertex.iX, endVertex.iY, sector.iCeilHeight);
-		manualMesh.textureCoord(1, 1);		
+		if(lineDefs[i].iRightSideDef >= 0)
+		{			
+			const SideDef_s &rightSide = sideDefs[lineDefs[i].iRightSideDef];
+			const Sector_s &rightSideSector = sectors[rightSide.iSector];
 
-		manualMesh.position(endVertex.iX, endVertex.iY, sector.iFloorHeight);
-		manualMesh.textureCoord(1, 0);	
+			if(rightSide.uLowerTexture.uName != '-')
+			{
+				const SideDef_s &leftSide = sideDefs[lineDefs[i].iLeftSideDef];
+				const Sector_s &leftSideSector = sectors[leftSide.iSector];
 
-		manualMesh.triangle(2, 1, 0);
-		manualMesh.triangle(0, 3, 2);
+				this->ExportWallMesh(manualMesh, rightSideSector.iFloorHeight, leftSideSector.iFloorHeight, rightSide.uLowerTexture, rightSide.iOffsetX, rightSide.iOffsety, vertices, lineDefs[i], file);				
+			}	
 
-		manualMesh.end();
+			if(rightSide.uMiddleTexture.uName != '-')
+			{
+				this->ExportWallMesh(manualMesh, rightSideSector.iFloorHeight, rightSideSector.iCeilHeight, rightSide.uMiddleTexture, rightSide.iOffsetX, rightSide.iOffsety, vertices, lineDefs[i], file);				
+			}		
+
+			if(rightSide.uUpperTexture.uName != '-')
+			{
+				const SideDef_s &leftSide = sideDefs[lineDefs[i].iLeftSideDef];
+				const Sector_s &leftSideSector = sectors[leftSide.iSector];
+
+				this->ExportWallMesh(manualMesh, leftSideSector.iCeilHeight, rightSideSector.iCeilHeight, rightSide.uUpperTexture, rightSide.iOffsetX, rightSide.iOffsety, vertices, lineDefs[i], file);				
+			}	
+		}
 	}
 
 	namespace fs = boost::filesystem;
@@ -112,9 +175,7 @@ void OgreExporter_c::ExportLevel(const WadLevel_c &level, const WadFile_c &file)
 
 	mesh.setNull();
 
-	resourceGroupManager.shutdownAll();
-
-	this->ExportLevelMaterials(level, file);
+	resourceGroupManager.shutdownAll();	
 
 	this->CreateResourcesCfg();
 }

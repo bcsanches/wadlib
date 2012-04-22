@@ -4,6 +4,8 @@
 #include <set>
 #include <string>
 
+#include <OgrePrerequisites.h>
+
 #include "WadTypes.h"
 
 class SDLTexture_c;
@@ -36,6 +38,8 @@ class OgreExporter_c
 
 		void ExportWall(SDLTexture_c &texture,  const WadFile_c &file, Name_u name);
 		void ExportWalls(const WadLevel_c &level, const WadFile_c &file);
+
+		void ExportWallMesh(Ogre::ManualObject &manualMesh, int floorHeight, int ceilingHeight, Name_u textureName, int offsetX, int offsetY, const Vertex_s *vertices, const LineDef_s &lineDef, const WadFile_c &wad);
 
 		void CreateResourcesCfg();
 

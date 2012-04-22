@@ -50,7 +50,9 @@ class WadFile_c
 
 		void LoadFlat(ITexture_c &texture, Name_u name);
 		void LoadTexture(ITexture_c &texture, uint32_t index) const;
-		
+
+		const Texture_s &GetTextureInfo(Name_u name) const;
+				
 		Name_u GetTextureName(uint32_t index) const;
 		size_t GetNumTextures() const;
 
@@ -69,7 +71,7 @@ class WadFile_c
 		void ReadRawLump(std::vector<uint8_t> &dest, const char *szName);
 
 		void LoadTexturesData(const Directory_s &textures);
-		void LoadPatchLumpsNames();
+		void LoadPatchLumpsNames();		
 
 		const WadPatch_c &GetPatch(const Name_u &name) const;
 

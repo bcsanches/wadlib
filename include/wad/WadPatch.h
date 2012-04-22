@@ -30,6 +30,7 @@ class WadPatch_c
 		void Load(const WadFile_c &file, const Directory_s &patchDir);
 		
 		inline int GetWidth() const;
+		inline int GetHeight() const;
 
 		inline const uint8_t *GetPixels() const;
 		inline const uint8_t *GetColumn(size_t column) const;
@@ -46,7 +47,12 @@ class WadPatch_c
 inline int WadPatch_c::GetWidth() const
 {
 	return stHeader.iWidth;
-}		
+}	
+
+inline int WadPatch_c::GetHeight() const
+{
+	return stHeader.iWidth;
+}	
 
 inline const uint8_t *WadPatch_c::GetPixels() const
 {
