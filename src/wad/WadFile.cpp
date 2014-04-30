@@ -16,6 +16,7 @@ subject to the following restrictions:
 
 #include "WadFile.h"
 
+#include <algorithm>
 #include <sstream>
 #include <cstring>
 #include <stdexcept>

@@ -1,0 +1,12 @@
+lib/
+project/visual/bin/
+project/visual/vs2013/Debug/
+project/visual/vs2013/ogreexport/Debug/
+project/visual/vs2013/ogreexportlib/Debug/
+project/visual/vs2013/wadlib/Debug/
+project/visual/vs2013/wadlib/wadlib.vcxproj.user
+project/visual/vs2013/wadloader.opensdf
+project/visual/vs2013/wadloader.v12.suo
+project/visual/vs2013/wadloader/Debug/
+project/visual/vs2013/wadloader.sdf
+project/visual/vs2013/wadloader/wadloader.vcxproj.user

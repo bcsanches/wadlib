@@ -1,7 +1,6 @@
 #include "OgreExporter.h"
 
 #include <OgreDefaultHardwareBufferManager.h>
-#include <OgreLodStrategyManager.h>
 #include <OgreLogManager.h>
 #include <OgreManualObject.h>
 #include <OgreMeshManager.h>
@@ -89,7 +88,7 @@ void OgreExporter_c::ExportLevel(const WadLevel_c &level, const WadFile_c &file)
 	this->ExportLevelMaterials(level, file);
 
 	Ogre::DefaultHardwareBufferManager hardwareBufferManager;
-	Ogre::ManualObject manualMesh(level.GetName());	
+	Ogre::ManualObject manualMesh(level.GetName());		
 
 	const LineDef_s *lineDefs = level.GetLineDefs();
 	const size_t numLineDefs = level.GetNumLineDefs();
@@ -167,7 +166,7 @@ void OgreExporter_c::ExportLevel(const WadLevel_c &level, const WadFile_c &file)
 
 	Ogre::ResourceGroupManager resourceGroupManager;
 	Ogre::MeshManager meshManager;
-	Ogre::LodStrategyManager logStrategyManager;
+	//Ogre::LodStrategyManager logStrategyManager;
 	Ogre::MeshPtr mesh = manualMesh.convertToMesh(level.GetName());
 
 	Ogre::MeshSerializer serializer;
