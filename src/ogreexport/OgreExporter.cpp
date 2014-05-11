@@ -1,11 +1,16 @@
 #include "OgreExporter.h"
 
 #include <OgreDefaultHardwareBufferManager.h>
+#include <OgreIteratorWrapper.h>
+#include <OgreLodStrategyManager.h>
 #include <OgreLogManager.h>
+#include <OgreMaterialManager.h>
 #include <OgreManualObject.h>
 #include <OgreMeshManager.h>
 #include <OgreMeshSerializer.h>
 #include <OgreResourceGroupManager.h>
+
+#include <iostream>
 
 #include <boost/foreach.hpp>
 #include <boost/filesystem.hpp>
@@ -87,6 +92,15 @@ void OgreExporter_c::ExportLevel(const WadLevel_c &level, const WadFile_c &file)
 {	
 	this->ExportLevelMaterials(level, file);
 
+	Ogre::LogManager logManager;
+	logManager.createLog("ogre.log", true, true, false);
+
+	Ogre::ResourceGroupManager resourceGroupManager;
+	Ogre::LodStrategyManager logStrategyManager;
+
+	Ogre::MaterialManager materialManager;
+	materialManager.initialise();
+
 	Ogre::DefaultHardwareBufferManager hardwareBufferManager;
 	Ogre::ManualObject manualMesh(level.GetName());		
 
@@ -159,14 +173,9 @@ void OgreExporter_c::ExportLevel(const WadLevel_c &level, const WadFile_c &file)
 	std::string levelName = level.GetName();
 	levelName += ".mesh";
 
-	path /= levelName;	
-
-	Ogre::LogManager logManager;
-	logManager.createLog("ogre.log", true, true, false);
-
-	Ogre::ResourceGroupManager resourceGroupManager;
-	Ogre::MeshManager meshManager;
-	//Ogre::LodStrategyManager logStrategyManager;
+	path /= levelName;		
+	
+	Ogre::MeshManager meshManager;	
 	Ogre::MeshPtr mesh = manualMesh.convertToMesh(level.GetName());
 
 	Ogre::MeshSerializer serializer;

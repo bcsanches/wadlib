@@ -15,33 +15,33 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\wad\WadFile.cpp">
+    <ClCompile Include="..\..\..\..\src\wad\WadFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\wad\WadLevel.cpp">
+    <ClCompile Include="..\..\..\..\src\wad\WadLevel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\wad\WadPatch.cpp">
+    <ClCompile Include="..\..\..\..\src\wad\WadPatch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\include\wad\ITexture.h">
+    <ClInclude Include="..\..\..\..\include\wad\ITexture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\wad\Vector2d.h">
+    <ClInclude Include="..\..\..\..\include\wad\Vector2d.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\wad\WadFile.h">
+    <ClInclude Include="..\..\..\..\include\wad\WadFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\wad\WadLevel.h">
+    <ClInclude Include="..\..\..\..\include\wad\WadLevel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\wad\WadPatch.h">
+    <ClInclude Include="..\..\..\..\include\wad\WadPatch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\wad\WadTypes.h">
+    <ClInclude Include="..\..\..\..\include\wad\WadTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

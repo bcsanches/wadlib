@@ -10,3 +10,8 @@ project/visual/vs2013/wadloader.v12.suo
 project/visual/vs2013/wadloader/Debug/
 project/visual/vs2013/wadloader.sdf
 project/visual/vs2013/wadloader/wadloader.vcxproj.user
+project/visual/vs2013/Release/
+project/visual/vs2013/ogreexport/Release/
+project/visual/vs2013/ogreexportlib/Release/
+project/visual/vs2013/wadlib/Release/
+project/visual/vs2013/wadloader/Release/
