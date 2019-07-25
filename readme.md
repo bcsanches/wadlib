@@ -20,8 +20,8 @@ In progress:
 * Exports floors and ceilings
 * Exports movable parts (doors, elevators, etc) as separated meshes
 
-![Test level with Ogitor](http://wadlib.googlecode.com/files/wadlib_20120422.JPG)
-![2d map viewer](http://wadlib.googlecode.com/files/wadlib.png)        
+![Test level with Ogitor](https://raw.githubusercontent.com/bcsanches/wadlib/master/media/doom2_map01.jpg)
+![2d map viewer](https://raw.githubusercontent.com/bcsanches/wadlib/master/media/doom2_map01_2d.png)        
 
 This is not a Doom port, just a tool for creating triangle meshes from doom maps and playing with it on modern engines.
 Free for commercial use, open source under the ZLib License.
